@@ -37,16 +37,28 @@ public class ClaseServicio {
             claseDTO.setNombreClase(clase.getNombreClase());
             claseDTO.setHorarioClase(clase.getHorarioClase());
             claseDTO.setIdInstructor(clase.getInstructor().getIdInstructor());
-            claseDTO.setSocios(listaSo.stream().map(socio -> {
+            claseDTO.setSocios(clase.getSocios().stream().map(socio -> {
                 SocioDTO socioDTO = new SocioDTO();
-                socioDTO.setDni(socio.getDni());
                 socioDTO.setNombre(socio.getNombre());
                 socioDTO.setApellido(socio.getApellido());
+                socioDTO.setDni(socio.getDni());
                 socioDTO.setActivo(socio.isActivo());
                 return socioDTO;
             }).toList());
             return claseDTO;
         }).toList();
+    }
+
+    public String agregarSocioClase(String dni, String nombreClase){
+
+        Socio socioEnc = socioRepositorio.findByDni(dni);
+        Clase claseEnc = claseRepositorio.findBynombreClase(nombreClase);
+
+        claseEnc.getSocios().add(socioEnc);
+        socioEnc.getClases().add(claseEnc);
+        claseRepositorio.save(claseEnc);
+
+        return "Socio agregado correctamene";
     }
 
     public ClaseDTO agregarClase(ClaseDTO claseDTO, String nombre){

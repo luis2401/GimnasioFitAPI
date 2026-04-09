@@ -29,5 +29,9 @@ public class ClaseControlador {
         return ResponseEntity.ok(claseServicio.agregarClase(claseDTO,nombre));
     }
 
+    @PatchMapping("/{dni}/{nombreClase}")
+    public ResponseEntity<?> agregarSocioClase(@PathVariable String nombreClase, @PathVariable String dni){
+        return ResponseEntity.ok(claseServicio.agregarSocioClase(dni,nombreClase));
+    }
 
 }
