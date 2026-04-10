@@ -29,6 +29,17 @@ public class SocioControlador {
         return ResponseEntity.ok(lista);
     }
 
+
+    @GetMapping("/activos")
+    public ResponseEntity<?> listarSociosActivos(){
+        return ResponseEntity.ok( socioServicio.obtenerSociosActivos());
+    }
+
+    @GetMapping("/inactivos")
+    public ResponseEntity<?> listarSociosInactivos(){
+        return ResponseEntity.ok( socioServicio.obtenerSociosInactivos());
+    }
+
     @GetMapping("/{dni}")
     public ResponseEntity<?> listarPorId(@PathVariable String dni){
         SocioDTO socio = socioServicio.buscarPorDni(dni);

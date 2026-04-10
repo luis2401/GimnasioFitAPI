@@ -1,5 +1,6 @@
 package com.gimnasio.fit.api.servicio;
 
+import com.gimnasio.fit.api.dto.ClaseDTO;
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Socio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
@@ -42,6 +43,32 @@ public class SocioServicio {
         return listaEntidades.stream()
                 .map(socio -> {
                    return convertirDTO(socio);
+                })
+                .toList();
+    }
+
+    public List<SocioDTO> obtenerSociosActivos(){
+        List<Socio> lista = socioRepositorio.findAll();
+
+        return lista
+                .stream()
+                .filter(socio -> {
+                    return socio.isActivo();
+                })
+                .map(socio -> {
+                    return convertirDTO(socio);
+                }).toList();
+    }
+
+    public List<SocioDTO> obtenerSociosInactivos(){
+        List<Socio> lista = socioRepositorio.findAll();
+
+        return lista.stream()
+                .filter(socio -> {
+                    return !socio.isActivo();
+                })
+                .map(socio -> {
+                    return convertirDTO(socio);
                 })
                 .toList();
     }

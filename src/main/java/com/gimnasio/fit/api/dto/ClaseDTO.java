@@ -1,6 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-import com.gimnasio.fit.api.modelo.Socio;
 
 import java.util.List;
 
