@@ -12,7 +12,7 @@ public class SocioDTO {
 
     }
 
-    public SocioDTO(String dni, String nombre, String apellido, boolean activo) {
+    public SocioDTO(String dni, String nombre, String apellido) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;

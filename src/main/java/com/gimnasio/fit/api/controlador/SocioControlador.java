@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -56,8 +55,13 @@ public class SocioControlador {
 
     @PostMapping
     public ResponseEntity<?> guardarSocio(@Valid @RequestBody SocioDTO nuevoSocio){
-        SocioDTO socioDTO = socioServicio.guardarSocio(nuevoSocio);
-        return ResponseEntity.status(HttpStatus.CREATED).body(socioDTO);
+
+        if (!nuevoSocio.getDni().isEmpty()) {
+            SocioDTO socioDTO = socioServicio.guardarSocio(nuevoSocio);
+            return ResponseEntity.status(HttpStatus.CREATED).body(socioDTO);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingrese un dni porfavorrrr");
     }
 
 //    @GetMapping("/vencidos")

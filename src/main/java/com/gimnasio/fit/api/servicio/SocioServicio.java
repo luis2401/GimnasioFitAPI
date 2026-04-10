@@ -47,8 +47,13 @@ public class SocioServicio {
     }
 
     public SocioDTO guardarSocio(SocioDTO socioDTO){
-        if(socioRepositorio.existsByDni(socioDTO.getDni())){
-           throw new RuntimeException("El DNI " + socioDTO.getDni() + " ya está registrado.");
+
+        if (!socioDTO.getDni().isEmpty()) {
+            if (socioRepositorio.existsByDni(socioDTO.getDni())) {
+                throw new RuntimeException("El DNI " + socioDTO.getDni() + " ya está registrado.");
+            }
+        } else {
+            throw new RuntimeException("Porfavor ingrese el dni del socio a registrar");
         }
         Socio entidad = convertirEntidad(socioDTO);
 
