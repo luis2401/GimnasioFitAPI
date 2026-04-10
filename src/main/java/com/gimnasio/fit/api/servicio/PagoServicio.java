@@ -7,6 +7,7 @@ import com.gimnasio.fit.api.modelo.Pago;
 import com.gimnasio.fit.api.modelo.Socio;
 import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,6 @@ public class PagoServicio {
     @Autowired
     private PagoRepositorio pagoRepositorio;
 
-    @Autowired
-    private SocioRepositorio socioRepositorio;
-
 
     public Double calcularMontoSegunPlan(String tipoPlan) {
         int meses = obtenerMeses(tipoPlan);
@@ -32,7 +30,16 @@ public class PagoServicio {
     private int obtenerMeses(String tipoPlan) {
         switch (tipoPlan.toUpperCase()) {
             case "UNO": return 1;
+            case "DOS": return 2;
             case "TRES": return 3;
+            case "CUATRO": return 4;
+            case "CINCO": return 5;
+            case "SEIS": return 6;
+            case "SIETE": return 7;
+            case "OCHO": return 8;
+            case "NUEVE": return 9;
+            case "DIEZ": return 10;
+            case "ONCE": return 11;
             case "DOCE": return 12;
             default: return 1;
         }
@@ -40,7 +47,6 @@ public class PagoServicio {
 
     public PagoDTO guardarPago(Membresia membresia, Socio socio){
         Pago pago = new Pago();
-
 
         pago.setFechaPago(LocalDate.now());
         pago.setMonto(calcularMontoSegunPlan(membresia.getTipoPlan()));
@@ -57,7 +63,7 @@ public class PagoServicio {
         dto.setFechaPago(pago.getFechaPago());
         dto.setMonto(pago.getMonto());
         dto.setMetodo(pago.getMetodo());
-        dto.setIdSocio(pago.getSocio().getId());
+        dto.setDniSocio(pago.getSocio().getDni());
         dto.setIdMembresia(pago.getMembresia().getIdMembresia());
 
         return dto;

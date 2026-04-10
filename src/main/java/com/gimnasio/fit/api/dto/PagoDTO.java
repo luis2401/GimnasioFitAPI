@@ -11,17 +11,17 @@ public class PagoDTO {
     private Double monto;
     private String metodo;
     private Integer idMembresia;
-    private Integer idSocio;
+    private String dniSocio;
 
     public PagoDTO() {
     }
 
-    public PagoDTO(LocalDate fechaPago, Double monto, String metodo, Integer idMembresia, Integer idSocio) {
+    public PagoDTO(LocalDate fechaPago, Double monto, String metodo, Integer idMembresia, String dniSocio) {
         this.fechaPago = fechaPago;
         this.monto = monto;
         this.metodo = metodo;
         this.idMembresia = idMembresia;
-        this.idSocio = idSocio;
+        this.dniSocio = dniSocio;
     }
 
     public LocalDate getFechaPago() {
@@ -56,11 +56,11 @@ public class PagoDTO {
         this.idMembresia = idMembresia;
     }
 
-    public Integer getIdSocio() {
-        return idSocio;
+    public String getDniSocio() {
+        return dniSocio;
     }
 
-    public void setIdSocio(Integer idSocio) {
-        this.idSocio = idSocio;
+    public void setDniSocio(String dniSocio) {
+        this.dniSocio = dniSocio;
     }
 }
