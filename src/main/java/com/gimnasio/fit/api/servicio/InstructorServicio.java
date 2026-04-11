@@ -20,44 +20,61 @@ public class InstructorServicio {
     @Autowired
     private ClaseRepositorio claseRepositorio;
 
+    public InstructorDTO convertirDTO(Instructor instructor){
+        InstructorDTO instructorDTO = new InstructorDTO();
+        instructorDTO.setIdInstructor(instructor.getIdInstructor());
+        instructorDTO.setNombreInstructor(instructor.getNombreInstructor());
+        instructorDTO.setApellidoInstructor(instructor.getApellidoInstructor());
+        instructorDTO.setTelefono(instructor.getTelefono());
+        instructorDTO.setEmail(instructor.getEmail());
+        instructorDTO.setClaseDTO(instructor.getClases().stream()
+                .map(clase -> {
+                    ClaseDTO claseDTO = new ClaseDTO();
+                    claseDTO.setIdInstructor(instructor.getIdInstructor());
+                    claseDTO.setIdClase(clase.getIdClase());
+                    claseDTO.setNombreClase(clase.getNombreClase());
+                    claseDTO.setHorarioClase(clase.getHorarioClase());
+                    return claseDTO;
+                }).toList());
+        return instructorDTO;
+    }
+
+    public Instructor convertirEntidad(InstructorDTO instructorDTO){
+        Instructor entidad = new Instructor();
+        entidad.setNombreInstructor(instructorDTO.getNombreInstructor());
+        entidad.setApellidoInstructor(instructorDTO.getApellidoInstructor());
+        entidad.setTelefono(instructorDTO.getTelefono());
+        entidad.setEmail(instructorDTO.getEmail());
+
+        return entidad;
+    }
+
     public List<InstructorDTO> listarInstructor() {
         List<Instructor> listaIns = instructorRepositorio.findAll();
         List<Clase> listaClase = claseRepositorio.findAll();
 
-        List<InstructorDTO> listaInsDto = listaIns.stream().map(instructor -> {
-            InstructorDTO instructorDTO = new InstructorDTO();
-            instructorDTO.setIdInstructor(instructor.getIdInstructor());
-            instructorDTO.setNombreInstructor(instructor.getNombreInstructor());
-            instructorDTO.setApellidoInstructor(instructor.getApellidoInstructor());
-            instructorDTO.setTelefono(instructor.getTelefono());
-            instructorDTO.setEmail(instructor.getEmail());
-            instructorDTO.setClaseDTO(listaClase.stream().map(clase -> {
-                ClaseDTO claseDTO = new ClaseDTO();
-                claseDTO.setIdInstructor(instructor.getIdInstructor());
-                claseDTO.setIdClase(clase.getIdClase());
-                claseDTO.setNombreClase(clase.getNombreClase());
-                claseDTO.setHorarioClase(clase.getHorarioClase());
-                return claseDTO;
-            }).toList());
-            return instructorDTO;
-        }).toList();
+        List<InstructorDTO> listaInsDto = listaIns.stream()
+                .map(instructor -> convertirDTO(instructor))
+                .toList();
         return listaInsDto;
     }
 
-
-
     public InstructorDTO agregarInstructor(InstructorDTO instructorDTO){
-        Instructor entidad = new Instructor();
-
-        entidad.setNombreInstructor(instructorDTO.getNombreInstructor());
-        entidad.setApellidoInstructor(instructorDTO.getApellidoInstructor());
-        entidad.setEspecialidadInstructor(instructorDTO.getEspecialidadInstructor());
-        entidad.setTelefono(instructorDTO.getTelefono());
-        entidad.setEmail(instructorDTO.getEmail());
-
-        instructorRepositorio.save(entidad);
-
+        instructorRepositorio.save(convertirEntidad(instructorDTO));
         return instructorDTO;
     }
+
+    public InstructorDTO editarInstructor(String nombre, InstructorDTO instructorDTO){
+        Instructor instructorExistente = instructorRepositorio.findBynombreInstructor(nombre);
+
+        if (instructorExistente == null){
+            return null;
+        }
+        //falta validacion de body instructordto
+
+        instructorRepositorio.save(convertirEntidad(instructorDTO));
+        return convertirDTO(instructorExistente);
+    }
+
 }
 

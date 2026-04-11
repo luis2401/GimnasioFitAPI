@@ -32,7 +32,6 @@ public class SocioServicio {
         entidad.setDni(socioDTO.getDni());
         entidad.setNombre(socioDTO.getNombre());
         entidad.setApellido(socioDTO.getApellido());
-        entidad.setActivo(socioDTO.isActivo());
 
         return entidad;
     }
@@ -75,17 +74,23 @@ public class SocioServicio {
 
     public SocioDTO guardarSocio(SocioDTO socioDTO){
 
+        if (socioDTO.getNombre() == null || socioDTO.getNombre().isBlank() ||
+                socioDTO.getApellido() == null || socioDTO.getApellido().isBlank() ||
+                socioDTO.getDni() == null || socioDTO.getDni().isBlank())
+        {
+            return null;
+        }
+
         if (!socioDTO.getDni().isEmpty()) {
             if (socioRepositorio.existsByDni(socioDTO.getDni())) {
                 throw new RuntimeException("El DNI " + socioDTO.getDni() + " ya está registrado.");
             }
-        } else {
-            throw new RuntimeException("Porfavor ingrese el dni del socio a registrar");
         }
+
         Socio entidad = convertirEntidad(socioDTO);
 
         socioRepositorio.save(entidad);
-        return socioDTO;
+        return convertirDTO(entidad);
     }
 
     public String eliminarSocio(String dni){
@@ -93,9 +98,43 @@ public class SocioServicio {
 
         if (socioExistente != null){
             socioRepositorio.delete(socioExistente);
-            return "Elimnado con exito";
+            return "Socio eliminado con exito!";
         }
-        return "No se encontro socio con ese dni";
+        return "error";
+    }
+
+    public SocioDTO editarSocioActivo(String dni) {
+        Socio socioExistente = socioRepositorio.findByDni(dni);
+
+        if (socioExistente == null){
+            return  null;
+        }
+        socioExistente.setActivo(!socioExistente.isActivo());
+        socioRepositorio.save(socioExistente);
+        return convertirDTO(socioExistente);
+
+    }
+
+    public SocioDTO editarSocio(String dni, SocioDTO socioDTO){
+        Socio socioExistente = socioRepositorio.findByDni(dni);
+
+        if (socioExistente == null){
+            return null;
+        }
+
+        if (socioDTO.getNombre() == null || socioDTO.getNombre().isBlank() ||
+                socioDTO.getApellido() == null || socioDTO.getApellido().isBlank() ||
+                socioDTO.getDni() == null || socioDTO.getDni().isBlank())
+        {
+            return null;
+        }
+
+        socioExistente.setDni(socioDTO.getDni());
+        socioExistente.setNombre(socioDTO.getNombre());
+        socioExistente.setApellido(socioDTO.getApellido());
+
+        socioRepositorio.save(socioExistente);
+        return convertirDTO(socioExistente);
     }
 
 //    public String editarMembresia(String dni, LocalDate nuevaFecha){
@@ -124,13 +163,18 @@ public class SocioServicio {
 //    }
 
     public SocioDTO buscarPorDni(String dni){
+
+        if (dni == null || dni.isBlank()){
+            throw new RuntimeException("Ingrese dni porfavor!");
+        }
+
         Socio socioExistente = socioRepositorio.findByDni(dni);
 
-        if (socioExistente !=null){
-            SocioDTO socioDTO= convertirDTO(socioExistente);
-            return socioDTO;
+        if (socioExistente ==null){
+            return null;
         }
-        return null;
+        SocioDTO socioDTO= convertirDTO(socioExistente);
+        return socioDTO;
     }
 
 //    public List<SocioDTO> sociosVencidos(){

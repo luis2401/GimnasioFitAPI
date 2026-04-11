@@ -35,7 +35,7 @@ public class Socio {
     @Size(min = 3, max = 30, message = "El nombre debe tener entre 3 y 30 caracteres")
     private String apellido;
 
-    private boolean activo;
+    private boolean activo = false;
 
     @JsonIgnore
     @OneToMany(mappedBy = "socio")

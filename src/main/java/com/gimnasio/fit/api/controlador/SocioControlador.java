@@ -17,18 +17,13 @@ import java.util.List;
 public class SocioControlador {
 
     @Autowired
-    private SocioRepositorio socioRepositorio;
-
-    @Autowired
     private SocioServicio socioServicio;
-
 
     @GetMapping
     public ResponseEntity<List<SocioDTO>> listarTodos() {
         List<SocioDTO> lista = socioServicio.obtenerTodosLosSocios();
         return ResponseEntity.ok(lista);
     }
-
 
     @GetMapping("/activos")
     public ResponseEntity<?> listarSociosActivos(){
@@ -49,30 +44,45 @@ public class SocioControlador {
        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Socio no encontrado");
     }
 
-//    @GetMapping("/{dni}/acceso")
-//    public ResponseEntity<?> tieneAcceso(@PathVariable String dni){
-//        return ResponseEntity.ok(socioServicio.tieneAcceso(dni));
-//    }
-//
-//    @PatchMapping("/{dni}/actualizar")
-//    public ResponseEntity<?> actualizarFechaMembresia(@PathVariable String dni, @RequestBody LocalDate nuevaFecha){
-//        return ResponseEntity.ok(socioServicio.editarMembresia(dni, nuevaFecha));
-//    }
-
     @DeleteMapping("/{dni}/eliminar")
     public ResponseEntity<?> eliminarSocio(@PathVariable String dni){
-        return ResponseEntity.ok(socioServicio.eliminarSocio(dni));
+        String resultado = socioServicio.eliminarSocio(dni);
+
+        if (resultado.contains("error")){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No hay un socio con ese dni!");
+        }
+
+        return ResponseEntity.ok(resultado);
     }
 
     @PostMapping
     public ResponseEntity<?> guardarSocio(@Valid @RequestBody SocioDTO nuevoSocio){
-
+        SocioDTO socioDTO = socioServicio.guardarSocio(nuevoSocio);
         if (!nuevoSocio.getDni().isEmpty()) {
-            SocioDTO socioDTO = socioServicio.guardarSocio(nuevoSocio);
             return ResponseEntity.status(HttpStatus.CREATED).body(socioDTO);
+        } else if (socioDTO== null){
+            return ResponseEntity.badRequest().body("Porfavor ingrese los datos del socio!");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingrese un dni porfavorrrr");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Ingrese un dni porfavor");
+    }
+
+    @PatchMapping("/editar/{dni}")
+    public ResponseEntity<?> editarSocio(@PathVariable String dni, @RequestBody SocioDTO socioDTO){
+        SocioDTO resultado = socioServicio.editarSocio(dni, socioDTO);
+        if (resultado==null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Socio no encontrado o no ingreso los datos del socio correctamente!");
+        }
+        return ResponseEntity.ok(resultado);
+    }
+
+    @PatchMapping("/editarEstado/{dni}")
+    public ResponseEntity<?> editarSocioAcIn(@PathVariable String dni){
+       SocioDTO resultado = socioServicio.editarSocioActivo(dni);
+       if (resultado == null){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontro socio con el dni ingresado");
+       }
+       return ResponseEntity.ok(resultado);
     }
 
 //    @GetMapping("/vencidos")
@@ -103,5 +113,14 @@ public class SocioControlador {
 //            return ResponseEntity.ok(socios);
 //        }
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron socios con esos caracteres");
+//    }
+//    @GetMapping("/{dni}/acceso")
+//    public ResponseEntity<?> tieneAcceso(@PathVariable String dni){
+//        return ResponseEntity.ok(socioServicio.tieneAcceso(dni));
+//    }
+//
+//    @PatchMapping("/{dni}/actualizar")
+//    public ResponseEntity<?> actualizarFechaMembresia(@PathVariable String dni, @RequestBody LocalDate nuevaFecha){
+//        return ResponseEntity.ok(socioServicio.editarMembresia(dni, nuevaFecha));
 //    }
 }
