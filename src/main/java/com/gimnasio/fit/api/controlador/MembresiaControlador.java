@@ -21,7 +21,7 @@ public class MembresiaControlador {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity<?> asignarMembresia(@Valid @RequestBody MembresiaDTO membresiaDTO, @RequestParam String dni){
-        return ResponseEntity.ok(membresiaServicio.crearMembresia(membresiaDTO,dni));
+    public ResponseEntity<?> crearMembresia(@Valid @RequestBody MembresiaDTO membresiaDTO){
+        return ResponseEntity.ok(membresiaServicio.crearMembresia(membresiaDTO));
     }
 }

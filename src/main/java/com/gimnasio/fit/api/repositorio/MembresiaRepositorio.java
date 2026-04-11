@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MembresiaRepositorio extends JpaRepository<Membresia, Integer> {
+
+    Membresia findBytipoPlan(String tipoPlan);
+
 }

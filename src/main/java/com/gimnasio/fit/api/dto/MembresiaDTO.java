@@ -1,10 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-import com.gimnasio.fit.api.modelo.Socio;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDate;
 
 public class MembresiaDTO {
@@ -13,27 +8,19 @@ public class MembresiaDTO {
 
         private String tipoPlan;
 
-        private LocalDate fechaInicio;
-
-        private LocalDate fechaFin;
+        private Integer duracionDias;
 
         private boolean estado;
 
-        private String dniSocio;
-
-        private String nombreape;
 
     public MembresiaDTO() {
     }
 
-    public MembresiaDTO(Integer idMembresia ,String tipoPlan, LocalDate fechaInicio, LocalDate fechaFin, boolean estado, String dniSocio, String nombreape) {
-        this.idMembresia=idMembresia;
+    public MembresiaDTO(Integer idMembresia, String tipoPlan, Integer duracionDias, boolean estado) {
+        this.idMembresia = idMembresia;
         this.tipoPlan = tipoPlan;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
+        this.duracionDias = duracionDias;
         this.estado = estado;
-        this.dniSocio = dniSocio;
-        this.nombreape = nombreape;
     }
 
     public Integer getIdMembresia() {
@@ -52,20 +39,12 @@ public class MembresiaDTO {
         this.tipoPlan = tipoPlan;
     }
 
-    public LocalDate getFechaInicio() {
-        return fechaInicio;
+    public Integer getDuracionDias() {
+        return duracionDias;
     }
 
-    public void setFechaInicio(LocalDate fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
-
-    public LocalDate getFechaFin() {
-        return fechaFin;
-    }
-
-    public void setFechaFin(LocalDate fechaFin) {
-        this.fechaFin = fechaFin;
+    public void setDuracionDias(Integer duracionDias) {
+        this.duracionDias = duracionDias;
     }
 
     public boolean isEstado() {
@@ -74,21 +53,5 @@ public class MembresiaDTO {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
-    }
-
-    public String getDniSocio() {
-        return dniSocio;
-    }
-
-    public void setDniSocio(String dniSocio) {
-        this.dniSocio = dniSocio;
-    }
-
-    public String getNombreape() {
-        return nombreape;
-    }
-
-    public void setNombreape(String nombreape) {
-        this.nombreape = nombreape;
     }
 }

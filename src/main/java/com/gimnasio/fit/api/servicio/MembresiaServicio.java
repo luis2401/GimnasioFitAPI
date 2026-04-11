@@ -20,22 +20,6 @@ public class MembresiaServicio {
     @Autowired
     private MembresiaRepositorio membresiaRepositorio;
 
-    @Autowired
-    private SocioRepositorio socioRepositorio;
-
-    @Autowired
-    private PagoRepositorio pagoRepositorio;
-
-    @Autowired
-    private PagoServicio pagoServicio;
-
-
-    public void calcularFechaFinSegunPlan(Membresia membresia, String tipoPlan) {
-        int meses = obtenerMesesSegunPlan(tipoPlan);
-        membresia.setFechaFin(LocalDate.now().plusMonths(meses));
-    }
-
-
     public int obtenerMesesSegunPlan(String tipoPlan) {
         switch (tipoPlan.trim().toUpperCase()) {
             case "UNO":    return 1;
@@ -46,68 +30,44 @@ public class MembresiaServicio {
         }
     }
 
-    public Membresia convertirEntidad(MembresiaDTO membresiaDTO){
-        Membresia membresia = new Membresia();
-        membresia.setTipoPlan(membresiaDTO.getTipoPlan());
-        membresia.setFechaInicio(LocalDate.now());
-        calcularFechaFinSegunPlan(membresia, membresiaDTO.getTipoPlan());
-        membresia.setEstado(true);
-
-        return membresia;
-    }
+//    public Membresia convertirEntidad(MembresiaDTO membresiaDTO){
+//        Membresia membresia = new Membresia();
+//        membresia.setTipoPlan(membresiaDTO.getTipoPlan());
+//        membresia.setFechaInicio(LocalDate.now());
+//        calcularFechaFinSegunPlan(membresia, membresiaDTO.getTipoPlan());
+//        membresia.setEstado(true);
+//
+//        return membresia;
+//    }
 
     public MembresiaDTO convertirDTO(Membresia membresia){
         MembresiaDTO membresiaDTO = new MembresiaDTO();
         membresiaDTO.setIdMembresia(membresia.getIdMembresia());
         membresiaDTO.setTipoPlan(membresia.getTipoPlan());
-        membresiaDTO.setFechaInicio(membresia.getFechaInicio());
-        membresiaDTO.setFechaFin(membresia.getFechaFin());
-        membresiaDTO.setEstado(true);
-
-        membresiaDTO.setDniSocio(membresia.getSocio().getDni());
-        membresiaDTO.setNombreape(membresia.getSocio().getNombre()+" "+membresia.getSocio().getApellido());
+        membresiaDTO.setDuracionDias(membresia.getDuracionDias());
+        membresiaDTO.setEstado(membresia.isEstado());
 
         return membresiaDTO;
     }
 
-    public MembresiaDTO crearMembresia(MembresiaDTO membresiaDTO, String dni){
-        Membresia membresia= convertirEntidad(membresiaDTO);
-
-        Socio socioencontrado = socioRepositorio.findByDni(dni);
-        membresia.setSocio(socioencontrado);
+    public MembresiaDTO crearMembresia(MembresiaDTO membresiaDTO){
+        Membresia membresia = new Membresia();
+        membresia.setTipoPlan(membresiaDTO.getTipoPlan());
+        membresia.setDuracionDias(membresiaDTO.getDuracionDias());
+        membresia.setEstado(membresiaDTO.isEstado());
 
         membresiaRepositorio.save(membresia);
-        socioRepositorio.save(socioencontrado);
-
-        switch (membresia.getTipoPlan().toUpperCase()){
-            case "UNO": membresia.setEstado(true); membresiaDTO.setEstado(true); break;
-        }
-
-        if (membresia.isEstado()){
-            socioencontrado.setActivo(true);
-        }
-
-        pagoServicio.guardarPago(membresia, socioencontrado);
-
-        socioencontrado.getMembresias().add(membresia);
 
         return convertirDTO(membresia);
     }
 
-    public List<MembresiaDTO> listar(){
+    public List<MembresiaDTO> listar() {
         List<Membresia> lista = membresiaRepositorio.findAll();
 
-      return lista.stream().map(membresia -> {
-            MembresiaDTO membresiaDTO = new MembresiaDTO();
-            membresiaDTO.setIdMembresia(membresia.getIdMembresia());
-            membresiaDTO.setTipoPlan(membresia.getTipoPlan());
-            membresiaDTO.setFechaInicio(membresia.getFechaInicio());
-            membresiaDTO.setFechaFin(membresia.getFechaFin());
-            membresiaDTO.setEstado(membresia.isEstado());
-            membresiaDTO.setDniSocio(membresia.getSocio().getDni());
-            membresiaDTO.setNombreape(membresia.getSocio().getNombre()+" "+membresia.getSocio().getApellido());
-            return membresiaDTO;
-        }).toList();
-
+        return lista.stream()
+                .map(membresia -> {
+                    return convertirDTO(membresia);
+                })
+                .toList();
     }
 }

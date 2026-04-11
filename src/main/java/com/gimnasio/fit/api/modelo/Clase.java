@@ -29,6 +29,14 @@ public class Clase {
     @NotBlank(message = "El horario de la clase no puede estar vacio")
     private String horarioClase;
 
+    @NotBlank(message = "El dia de la semana no puede estar vacio")
+    private String diaSemana;
+
+    @NotNull(message = "El cupo maximo de una clase no puede estar vacio")
+    private Integer cupoMax;
+
+    private boolean activo = true;
+
     @NotNull(message = "Se necesita asignar un instructor")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id", referencedColumnName = "idInstructor", nullable = false)

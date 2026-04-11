@@ -18,9 +18,14 @@ public class PagoControlador {
         return ResponseEntity.ok(pagoServicio.listarPagos());
     }
 
-//    @PostMapping("/crear")
-//    public ResponseEntity<PagoDTO> guardarPago(@RequestBody PagoDTO pagoDTO, @RequestParam String dni){
-//       return ResponseEntity.ok(pagoServicio.guardarPago(pagoDTO, dni));
-//    }
+    @PostMapping("/crear/{tipoPlan}/{dni}/{metodoPago}")
+    public ResponseEntity<PagoDTO> guardarPago(@PathVariable String tipoPlan, @PathVariable String dni, @PathVariable String metodoPago){
+       return ResponseEntity.ok(pagoServicio.guardarPago(tipoPlan,dni, metodoPago));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarPago(@PathVariable Integer id){
+        return ResponseEntity.ok(pagoServicio.eliminarPago(id));
+    }
 
 }

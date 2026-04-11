@@ -5,6 +5,7 @@ import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Membresia;
 import com.gimnasio.fit.api.modelo.Pago;
 import com.gimnasio.fit.api.modelo.Socio;
+import com.gimnasio.fit.api.repositorio.MembresiaRepositorio;
 import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -21,6 +22,11 @@ public class PagoServicio {
     @Autowired
     private PagoRepositorio pagoRepositorio;
 
+    @Autowired
+    private MembresiaRepositorio membresiaRepositorio;
+
+    @Autowired
+    private SocioRepositorio socioRepositorio;
 
     public Double calcularMontoSegunPlan(String tipoPlan) {
         int meses = obtenerMeses(tipoPlan);
@@ -45,26 +51,48 @@ public class PagoServicio {
         }
     }
 
-    public PagoDTO guardarPago(Membresia membresia, Socio socio){
+    public PagoDTO guardarPago(String tipoPlan, String dni, String metodoPago){
         Pago pago = new Pago();
 
+        Membresia membresia = membresiaRepositorio.findBytipoPlan(tipoPlan);
+        Socio socio = socioRepositorio.findByDni(dni);
+
+        if (!metodoPago.equalsIgnoreCase("efectivo") && !metodoPago.equalsIgnoreCase("tarjeta")){
+            throw new RuntimeException("Ingrese un metodo de pago valido!");
+        }
+
         pago.setFechaPago(LocalDate.now());
-        pago.setMonto(calcularMontoSegunPlan(membresia.getTipoPlan()));
-        pago.setMetodo("efectivo");
+        pago.setMonto(obtenerMeses(tipoPlan)*100.0);
+        pago.setMetodo(metodoPago);
         pago.setMembresia(membresia);
         pago.setSocio(socio);
+        pago.setFechaInicio(LocalDate.now());
+        pago.setFechaFin(LocalDate.now().plusDays(membresia.getDuracionDias()));
+
 
         pagoRepositorio.save(pago);
+        socioRepositorio.save(socio);
         return convertirDTO(pago);
+    }
+
+    public String eliminarPago(Integer id) {
+        if (!pagoRepositorio.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar: El pago con ID " + id + " no existe.");
+        }
+        pagoRepositorio.deleteById(id);
+        return "Eliminado con éxito";
     }
 
     public PagoDTO convertirDTO(Pago pago){
         PagoDTO dto = new PagoDTO();
+        dto.setIdPago(pago.getId_pago());
         dto.setFechaPago(pago.getFechaPago());
         dto.setMonto(pago.getMonto());
         dto.setMetodo(pago.getMetodo());
-        dto.setDniSocio(pago.getSocio().getDni());
         dto.setIdMembresia(pago.getMembresia().getIdMembresia());
+        dto.setDniSocio(pago.getSocio().getDni());
+        dto.setFechaIni(pago.getFechaInicio());
+        dto.setFechaFin(pago.getFechaFin());
 
         return dto;
     }

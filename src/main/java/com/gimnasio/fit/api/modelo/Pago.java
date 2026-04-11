@@ -32,14 +32,15 @@ public class Pago {
     @NotBlank(message = "Metodo de pago nno puede estar vacio")
     private String metodo;
 
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membresia_id", referencedColumnName = "idMembresia", nullable = false)
     private Membresia membresia;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "socio_id", referencedColumnName = "id", nullable = false)
     private Socio socio;
+
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 
 }

@@ -12,6 +12,7 @@ import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,24 +30,10 @@ public class ClaseServicio {
     public List<ClaseDTO> listarClase(){
         List<Clase> listaClase = claseRepositorio.findAll();
 
-        List<Socio> listaSo = socioRepositorio.findAll();
-
-        return listaClase.stream().map(clase -> {
-            ClaseDTO claseDTO = new ClaseDTO();
-            claseDTO.setIdClase(clase.getIdClase());
-            claseDTO.setNombreClase(clase.getNombreClase());
-            claseDTO.setHorarioClase(clase.getHorarioClase());
-            claseDTO.setIdInstructor(clase.getInstructor().getIdInstructor());
-            claseDTO.setSocios(clase.getSocios().stream().map(socio -> {
-                SocioDTO socioDTO = new SocioDTO();
-                socioDTO.setNombre(socio.getNombre());
-                socioDTO.setApellido(socio.getApellido());
-                socioDTO.setDni(socio.getDni());
-                socioDTO.setActivo(socio.isActivo());
-                return socioDTO;
-            }).toList());
-            return claseDTO;
-        }).toList();
+       return listaClase.stream()
+               .map(clase -> {
+                   return convertirDTO(clase);
+               }).toList();
     }
 
     public String agregarSocioClase(String dni, String nombreClase){
@@ -57,29 +44,53 @@ public class ClaseServicio {
         claseEnc.getSocios().add(socioEnc);
         socioEnc.getClases().add(claseEnc);
         claseRepositorio.save(claseEnc);
+        socioRepositorio.save(socioEnc);
 
         return "Socio agregado correctamene";
     }
 
-    public ClaseDTO agregarClase(ClaseDTO claseDTO, String nombre){
-        Clase entidad = new Clase();
+    public ClaseDTO convertirDTO(Clase clase){
+        ClaseDTO claseDTO = new ClaseDTO();
+        claseDTO.setIdClase(clase.getIdClase());
+        claseDTO.setNombreClase(clase.getNombreClase());
+        claseDTO.setHorarioClase(clase.getHorarioClase());
+        claseDTO.setDiaSemana(clase.getDiaSemana());
+        claseDTO.setCupoMax(clase.getCupoMax());
+        claseDTO.setActivo(clase.isActivo());
+        claseDTO.setIdInstructor(clase.getInstructor().getIdInstructor());
+        List<SocioDTO> lista = clase.getSocios().stream()
+                .map(socio -> {
+                    SocioDTO socioDTO = new SocioDTO();
+                    socioDTO.setDni(socio.getDni());
+                    socioDTO.setNombre(socio.getNombre());
+                    socioDTO.setApellido(socio.getApellido());
+                    socioDTO.setActivo(socio.isActivo());
+                    return socioDTO;
+                }).toList();
 
-        Instructor entidadIns = instructorRepositorio.findBynombreInstructor(nombre);
-
-
-        entidad.setNombreClase(claseDTO.getNombreClase());
-        entidad.setHorarioClase(claseDTO.getHorarioClase());
-        entidad.setInstructor(entidadIns);
-
-        entidadIns.setClases(entidad.getInstructor().getClases());
-
-        instructorRepositorio.save(entidadIns);
-
-        claseRepositorio.save(entidad);
+        claseDTO.setSocios(lista);
 
         return claseDTO;
+    }
+
+    public ClaseDTO agregarClase(ClaseDTO claseDTO, String nombreIns) {
+        Clase claseEntidad = new Clase();
+
+        claseEntidad.setNombreClase(claseDTO.getNombreClase());
+        claseEntidad.setHorarioClase(claseDTO.getHorarioClase());
+        claseEntidad.setDiaSemana(claseDTO.getDiaSemana());
+        claseEntidad.setCupoMax(claseDTO.getCupoMax());
+        claseEntidad.setActivo(claseDTO.isActivo());
+        claseEntidad.setInstructor(instructorRepositorio.findBynombreInstructor(nombreIns));
+        claseEntidad.setSocios(new ArrayList<>());
+
+        claseRepositorio.save(claseEntidad);
+
+        return  convertirDTO(claseEntidad);
 
     }
+
+
 
 }
 

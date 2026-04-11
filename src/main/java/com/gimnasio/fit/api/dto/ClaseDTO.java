@@ -11,6 +11,12 @@ public class ClaseDTO {
 
     private String horarioClase;
 
+    private String diaSemana;
+
+    private Integer cupoMax;
+
+    private boolean activo;
+
     private Integer idInstructor;
 
     private List<SocioDTO> socios;
@@ -18,10 +24,13 @@ public class ClaseDTO {
     public ClaseDTO() {
     }
 
-    public ClaseDTO(Integer idClase, String nombreClase, String horarioClase, Integer idInstructor, List<SocioDTO> socios) {
+    public ClaseDTO(Integer idClase, String nombreClase, String horarioClase, String diaSemana, Integer cupoMax, boolean activo, Integer idInstructor, List<SocioDTO> socios) {
         this.idClase = idClase;
         this.nombreClase = nombreClase;
         this.horarioClase = horarioClase;
+        this.diaSemana = diaSemana;
+        this.cupoMax = cupoMax;
+        this.activo = activo;
         this.idInstructor = idInstructor;
         this.socios = socios;
     }
@@ -48,6 +57,30 @@ public class ClaseDTO {
 
     public void setHorarioClase(String horarioClase) {
         this.horarioClase = horarioClase;
+    }
+
+    public String getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(String diaSemana) {
+        this.diaSemana = diaSemana;
+    }
+
+    public Integer getCupoMax() {
+        return cupoMax;
+    }
+
+    public void setCupoMax(Integer cupoMax) {
+        this.cupoMax = cupoMax;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 
     public Integer getIdInstructor() {

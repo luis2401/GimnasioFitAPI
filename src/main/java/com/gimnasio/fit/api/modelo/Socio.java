@@ -39,10 +39,6 @@ public class Socio {
 
     @JsonIgnore
     @OneToMany(mappedBy = "socio")
-    private List<Membresia> membresias;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "socio")
     private List<Pago> pagos;
 
     @ManyToMany

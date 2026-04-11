@@ -27,21 +27,8 @@ public class Membresia {
     @NotBlank(message = "El plan del socio no puede estar vacio")
     private String tipoPlan;
 
-    @NotNull(message = "La fecha de inicio del socio no puede estar vacia")
-    private LocalDate fechaInicio;
-
-    @NotNull(message = "La fecha de fin del socio no puede estar vacia")
-    private LocalDate fechaFin;
+    private Integer duracionDias;
 
     private boolean estado;
-
-    @OneToOne(mappedBy = "membresia")
-    private Pago pago;
-
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "socio_id", referencedColumnName = "id", nullable = false)
-    private Socio socio;
-
 
 }
