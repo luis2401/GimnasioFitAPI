@@ -94,21 +94,17 @@ public class SocioServicio {
     }
 
     public String eliminarSocio(String dni){
-        Socio socioExistente = socioRepositorio.findByDni(dni);
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
 
-        if (socioExistente != null){
-            socioRepositorio.delete(socioExistente);
-            return "Socio eliminado con exito!";
-        }
-        return "error";
+        socioRepositorio.delete(socioExistente);
+        return "Socio eliminado con exito!";
     }
 
     public SocioDTO editarSocioActivo(String dni) {
-        Socio socioExistente = socioRepositorio.findByDni(dni);
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
 
-        if (socioExistente == null){
-            return  null;
-        }
         socioExistente.setActivo(!socioExistente.isActivo());
         socioRepositorio.save(socioExistente);
         return convertirDTO(socioExistente);
@@ -116,11 +112,8 @@ public class SocioServicio {
     }
 
     public SocioDTO editarSocio(String dni, SocioDTO socioDTO){
-        Socio socioExistente = socioRepositorio.findByDni(dni);
-
-        if (socioExistente == null){
-            return null;
-        }
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
 
         if (socioDTO.getNombre() == null || socioDTO.getNombre().isBlank() ||
                 socioDTO.getApellido() == null || socioDTO.getApellido().isBlank() ||
@@ -168,11 +161,9 @@ public class SocioServicio {
             throw new RuntimeException("Ingrese dni porfavor!");
         }
 
-        Socio socioExistente = socioRepositorio.findByDni(dni);
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
 
-        if (socioExistente ==null){
-            return null;
-        }
         SocioDTO socioDTO= convertirDTO(socioExistente);
         return socioDTO;
     }

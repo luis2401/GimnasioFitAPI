@@ -25,6 +25,7 @@ public class InstructorServicio {
         instructorDTO.setIdInstructor(instructor.getIdInstructor());
         instructorDTO.setNombreInstructor(instructor.getNombreInstructor());
         instructorDTO.setApellidoInstructor(instructor.getApellidoInstructor());
+        instructorDTO.setEspecialidadInstructor(instructor.getEspecialidadInstructor());
         instructorDTO.setTelefono(instructor.getTelefono());
         instructorDTO.setEmail(instructor.getEmail());
         instructorDTO.setClaseDTO(instructor.getClases().stream()
@@ -43,6 +44,7 @@ public class InstructorServicio {
         Instructor entidad = new Instructor();
         entidad.setNombreInstructor(instructorDTO.getNombreInstructor());
         entidad.setApellidoInstructor(instructorDTO.getApellidoInstructor());
+        entidad.setEspecialidadInstructor(instructorDTO.getEspecialidadInstructor());
         entidad.setTelefono(instructorDTO.getTelefono());
         entidad.setEmail(instructorDTO.getEmail());
 
@@ -65,15 +67,43 @@ public class InstructorServicio {
     }
 
     public InstructorDTO editarInstructor(String nombre, InstructorDTO instructorDTO){
-        Instructor instructorExistente = instructorRepositorio.findBynombreInstructor(nombre);
+        Instructor instructorExistente = instructorRepositorio.findByNombreInstructorIgnoreCase(nombre);
 
         if (instructorExistente == null){
             return null;
         }
-        //falta validacion de body instructordto
-
-        instructorRepositorio.save(convertirEntidad(instructorDTO));
+        if(instructorDTO.getNombreInstructor() == null || instructorDTO.getNombreInstructor().isBlank() ||
+            instructorDTO.getApellidoInstructor() == null || instructorDTO.getApellidoInstructor().isBlank() ||
+                instructorDTO.getEspecialidadInstructor() == null || instructorDTO.getEspecialidadInstructor().isBlank() ||
+                instructorDTO.getEmail() == null || instructorDTO.getEmail().isBlank() ||
+                instructorDTO.getTelefono() == null || instructorDTO.getTelefono().isBlank())
+        {
+            return null;
+        }
+        instructorExistente.setNombreInstructor(instructorDTO.getNombreInstructor());
+        instructorExistente.setApellidoInstructor(instructorDTO.getApellidoInstructor());
+        instructorExistente.setEspecialidadInstructor(instructorDTO.getEspecialidadInstructor());
+        instructorExistente.setTelefono(instructorDTO.getTelefono());
+        instructorExistente.setEmail(instructorDTO.getEmail());
+        instructorRepositorio.save(instructorExistente);
         return convertirDTO(instructorExistente);
+    }
+
+
+    public String eliminarInsNom(String nombre){
+        if (instructorRepositorio.findByNombreInstructorIgnoreCase(nombre) != null){
+            instructorRepositorio.deleteByNombreInstructorIgnoreCase(nombre);
+            return "Instructor eliminado con exito!";
+        }
+        return "No se encontro un instructor con ese nombre!";
+    }
+
+    public String eliminarIns(Integer id){
+        if (instructorRepositorio.existsById(id)){
+            instructorRepositorio.deleteById(id);
+            return "Instructor eliminado con exito";
+        }
+        return "No se encontro un instructor con el id ingresado!";
     }
 
 }

@@ -55,7 +55,8 @@ public class PagoServicio {
         Pago pago = new Pago();
 
         Membresia membresia = membresiaRepositorio.findBytipoPlan(tipoPlan);
-        Socio socio = socioRepositorio.findByDni(dni);
+        Socio socio = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
 
         if (!metodoPago.equalsIgnoreCase("efectivo") && !metodoPago.equalsIgnoreCase("tarjeta")){
             throw new RuntimeException("Ingrese un metodo de pago valido!");

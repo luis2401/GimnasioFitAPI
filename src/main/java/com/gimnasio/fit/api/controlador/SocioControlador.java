@@ -2,7 +2,6 @@ package com.gimnasio.fit.api.controlador;
 
 
 import com.gimnasio.fit.api.dto.SocioDTO;
-import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import com.gimnasio.fit.api.servicio.SocioServicio;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

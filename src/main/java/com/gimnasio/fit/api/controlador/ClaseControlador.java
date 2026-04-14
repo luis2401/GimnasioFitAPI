@@ -15,9 +15,6 @@ public class ClaseControlador {
     @Autowired
     private ClaseServicio claseServicio;
 
-    @Autowired
-    private ClaseRepositorio claseRepositorio;
-
     @GetMapping
     public ResponseEntity<?> listarClase() {
         return ResponseEntity.ok(claseServicio.listarClase());
@@ -29,9 +26,24 @@ public class ClaseControlador {
         return ResponseEntity.ok(claseServicio.agregarClase(claseDTO,nombre));
     }
 
-    @PatchMapping("/{dni}/{nombreClase}")
-    public ResponseEntity<?> agregarSocioClase(@PathVariable String nombreClase, @PathVariable String dni){
-        return ResponseEntity.ok(claseServicio.agregarSocioClase(dni,nombreClase));
+    @PatchMapping("/{dni}/{id}")
+    public ResponseEntity<?> agregarSocioClase(@PathVariable Integer id, @PathVariable String dni){
+        return ResponseEntity.ok(claseServicio.agregarSocioClase(dni,id));
+    }
+
+    @PatchMapping("/editar/{id}")
+    public ResponseEntity<?> editarClase(@PathVariable Integer id, @RequestBody ClaseDTO claseDTO){
+        return ResponseEntity.ok(claseServicio.editarClase(id, claseDTO));
+    }
+
+    @GetMapping("/contar/{id}")
+    public ResponseEntity<?> contarSociosClase(@PathVariable Integer id){
+        return ResponseEntity.ok(claseServicio.contarSocioInscritos(id));
+    }
+
+    @PatchMapping("/eliminarSocio/{dni}/{id}")
+    public ResponseEntity<?> eliminarSocioClase(@PathVariable String dni, @PathVariable Integer id){
+        return ResponseEntity.ok(claseServicio.quitarSocioClase(dni, id));
     }
 
 }
