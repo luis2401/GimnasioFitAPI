@@ -67,11 +67,9 @@ public class InstructorServicio {
     }
 
     public InstructorDTO editarInstructor(String nombre, InstructorDTO instructorDTO){
-        Instructor instructorExistente = instructorRepositorio.findByNombreInstructorIgnoreCase(nombre);
+        Instructor instructorExistente = instructorRepositorio.findByNombreInstructorIgnoreCase(nombre)
+                .orElseThrow(() -> new RuntimeException("Instructor no encontrado con ese nombre!"));
 
-        if (instructorExistente == null){
-            return null;
-        }
         if(instructorDTO.getNombreInstructor() == null || instructorDTO.getNombreInstructor().isBlank() ||
             instructorDTO.getApellidoInstructor() == null || instructorDTO.getApellidoInstructor().isBlank() ||
                 instructorDTO.getEspecialidadInstructor() == null || instructorDTO.getEspecialidadInstructor().isBlank() ||
@@ -80,6 +78,7 @@ public class InstructorServicio {
         {
             return null;
         }
+
         instructorExistente.setNombreInstructor(instructorDTO.getNombreInstructor());
         instructorExistente.setApellidoInstructor(instructorDTO.getApellidoInstructor());
         instructorExistente.setEspecialidadInstructor(instructorDTO.getEspecialidadInstructor());
@@ -91,11 +90,11 @@ public class InstructorServicio {
 
 
     public String eliminarInsNom(String nombre){
-        if (instructorRepositorio.findByNombreInstructorIgnoreCase(nombre) != null){
-            instructorRepositorio.deleteByNombreInstructorIgnoreCase(nombre);
-            return "Instructor eliminado con exito!";
-        }
-        return "No se encontro un instructor con ese nombre!";
+        instructorRepositorio.findByNombreInstructorIgnoreCase(nombre)
+                .orElseThrow(() -> new RuntimeException("Instructor no encontrado con ese nombre!"));
+
+        instructorRepositorio.deleteByNombreInstructorIgnoreCase(nombre);
+        return "Instructor eliminado con exito!";
     }
 
     public String eliminarIns(Integer id){

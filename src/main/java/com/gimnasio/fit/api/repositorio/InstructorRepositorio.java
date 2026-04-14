@@ -5,10 +5,12 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface InstructorRepositorio extends JpaRepository<Instructor, Integer> {
 
-    Instructor findByNombreInstructorIgnoreCase(String nombreInstructor);
+    Optional<Instructor> findByNombreInstructorIgnoreCase(String nombreInstructor);
 
     @Transactional
     void deleteByNombreInstructorIgnoreCase(String nombreInstructor);

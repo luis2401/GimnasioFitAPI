@@ -4,10 +4,12 @@ package com.gimnasio.fit.api.servicio;
 import com.gimnasio.fit.api.dto.ClaseDTO;
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Clase;
+import com.gimnasio.fit.api.modelo.Instructor;
 import com.gimnasio.fit.api.modelo.Socio;
 import com.gimnasio.fit.api.repositorio.ClaseRepositorio;
 import com.gimnasio.fit.api.repositorio.InstructorRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,22 +30,32 @@ public class ClaseServicio {
     @Autowired
     private InstructorRepositorio instructorRepositorio;
 
-    public List<ClaseDTO> listarClase(){
+    public List<ClaseDTO> listarClase() {
         List<Clase> listaClase = claseRepositorio.findAll();
 
-       return listaClase.stream()
-               .map(clase -> {
-                   return convertirDTO(clase);
-               }).toList();
+        return listaClase.stream()
+                .map(clase -> {
+                    return convertirDTO(clase);
+                }).toList();
     }
 
-    public String agregarSocioClase(String dni, Integer id){
+    @Transactional
+    public String agregarSocioClase(String dni, Integer id) {
 
         Clase claseEnc = claseRepositorio.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
         Socio socioEnc = socioRepositorio.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
+
+
+        if (!validarCupoDisponible(claseEnc)) {
+            return "No se pueden agregar mas socios porque la clase esta llena";
+        }
+
+        if (validarSocioClase(socioEnc, claseEnc)) {
+            return "El socio ya esta inscrito en esta clase!";
+        }
 
         claseEnc.getSocios().add(socioEnc);
         socioEnc.getClases().add(claseEnc);
@@ -53,7 +65,7 @@ public class ClaseServicio {
         return "Socio agregado a la clase correctamene";
     }
 
-    public ClaseDTO convertirDTO(Clase clase){
+    public ClaseDTO convertirDTO(Clase clase) {
         ClaseDTO claseDTO = new ClaseDTO();
         claseDTO.setIdClase(clase.getIdClase());
         claseDTO.setNombreClase(clase.getNombreClase());
@@ -77,24 +89,27 @@ public class ClaseServicio {
         return claseDTO;
     }
 
+    @Transactional
     public ClaseDTO agregarClase(ClaseDTO claseDTO, String nombreIns) {
         Clase claseEntidad = new Clase();
+        Instructor instructor = instructorRepositorio.findByNombreInstructorIgnoreCase(nombreIns)
+                .orElseThrow(() -> new RuntimeException("Instructor no encontrado!"));
 
         claseEntidad.setNombreClase(claseDTO.getNombreClase());
         claseEntidad.setHorarioClase(claseDTO.getHorarioClase());
         claseEntidad.setDiaSemana(claseDTO.getDiaSemana());
         claseEntidad.setCupoMax(claseDTO.getCupoMax());
-        claseEntidad.setActivo(claseDTO.isActivo());
-        claseEntidad.setInstructor(instructorRepositorio.findByNombreInstructorIgnoreCase(nombreIns));
+        claseEntidad.setActivo(true);
+        claseEntidad.setInstructor(instructor);
         claseEntidad.setSocios(new ArrayList<>());
 
         claseRepositorio.save(claseEntidad);
 
-        return  convertirDTO(claseEntidad);
+        return convertirDTO(claseEntidad);
 
     }
 
-    public List<ClaseDTO> buscarClasePorId(Integer id){
+    public List<ClaseDTO> buscarClasePorId(Integer id) {
         return claseRepositorio.findById(id).stream()
                 .map(clase -> {
                     return convertirDTO(clase);
@@ -102,7 +117,7 @@ public class ClaseServicio {
                 ;
     }
 
-    public ClaseDTO editarClase(Integer id, ClaseDTO claseDTO){
+    public ClaseDTO editarClase(Integer id, ClaseDTO claseDTO) {
         Clase claseExis = claseRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
@@ -115,15 +130,16 @@ public class ClaseServicio {
         return convertirDTO(claseExis);
     }
 
-    public String activarDesClase(Integer id){
+    public String activarDesClase(Integer id) {
         Clase claseExis = claseRepositorio.findById(id)
-                .orElseThrow(() -> new RuntimeException("Clase no encontrada") );
+                .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
         claseExis.setActivo(!claseExis.isActivo());
         return "Clase activada o desactiva correctamente!";
     }
 
-    public String eliminarClase(Integer id){
+    @Transactional
+    public String eliminarClase(Integer id) {
         Clase claseExis = claseRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
@@ -131,7 +147,8 @@ public class ClaseServicio {
         return "Clase eliminada con exito!";
     }
 
-    public String quitarSocioClase(String dni, Integer id){
+    @Transactional
+    public String quitarSocioClase(String dni, Integer id) {
         Clase claseExis = claseRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
@@ -147,13 +164,33 @@ public class ClaseServicio {
 
     }
 
-    public Integer contarSocioInscritos(Integer id){
+    public Integer contarSocioInscritos(Integer id) {
         Clase claseExis = claseRepositorio.findById(id)
                 .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
         return claseExis.getSocios().size();
     }
 
+    public boolean validarCupoDisponible(Clase clase) {
+        return clase.getCupoMax() > clase.getSocios().size();
+    }
+
+    public boolean validarSocioClase(Socio socio, Clase clase) {
+        return clase.getSocios().contains(socio);
+    }
+
+    @Transactional
+    public String cambiarInstructorClase(Integer id, String nombreIns){
+        Clase claseExis = claseRepositorio.findById(id)
+                .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
+
+        Instructor instructorExis = instructorRepositorio.findByNombreInstructorIgnoreCase(nombreIns)
+                .orElseThrow(() -> new RuntimeException("Instructor con ese nombre no encontrado!"));
+
+        claseExis.setInstructor(instructorExis);
+        claseRepositorio.save(claseExis);
+        return "Instructor cambiado con exito!";
+    }
 
 }
 
