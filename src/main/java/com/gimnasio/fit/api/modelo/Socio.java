@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -37,9 +38,10 @@ public class Socio {
 
     private boolean activo = false;
 
-    @JsonIgnore
+    private LocalDate fechaFinMembresia;
+
     @OneToMany(mappedBy = "socio")
-    private List<Pago> pagos;
+    private List<Pago> pagos = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

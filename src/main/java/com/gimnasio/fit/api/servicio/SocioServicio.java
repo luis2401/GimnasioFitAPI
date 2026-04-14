@@ -1,12 +1,15 @@
 package com.gimnasio.fit.api.servicio;
 
 import com.gimnasio.fit.api.dto.ClaseDTO;
+import com.gimnasio.fit.api.dto.PagoDTO;
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Socio;
+import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -16,11 +19,15 @@ public class SocioServicio {
     @Autowired
     private SocioRepositorio socioRepositorio;
 
+    @Autowired
+    private PagoRepositorio pagoRepositorio;
+
     public SocioDTO convertirDTO(Socio socio){
         SocioDTO dto = new SocioDTO();
         dto.setDni(socio.getDni());
         dto.setNombre(socio.getNombre());
         dto.setApellido(socio.getApellido());
+        dto.setFechaFinMembresia(socio.getFechaFinMembresia());
         dto.setActivo(socio.isActivo());
 
         return dto;
@@ -32,7 +39,6 @@ public class SocioServicio {
         entidad.setDni(socioDTO.getDni());
         entidad.setNombre(socioDTO.getNombre());
         entidad.setApellido(socioDTO.getApellido());
-
         return entidad;
     }
 
@@ -88,9 +94,8 @@ public class SocioServicio {
         }
 
         Socio entidad = convertirEntidad(socioDTO);
-
-        socioRepositorio.save(entidad);
-        return convertirDTO(entidad);
+        Socio socioGuardado = socioRepositorio.save(entidad);
+        return convertirDTO(socioGuardado);
     }
 
     public String eliminarSocio(String dni){
@@ -130,6 +135,50 @@ public class SocioServicio {
         return convertirDTO(socioExistente);
     }
 
+    public SocioDTO buscarPorDni(String dni){
+
+        if (dni == null || dni.isBlank()){
+            throw new RuntimeException("Ingrese dni porfavor!");
+        }
+
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
+
+        SocioDTO socioDTO= convertirDTO(socioExistente);
+        return socioDTO;
+    }
+
+    public boolean validarAccesoSocio(String dni){
+        Socio socioExistente = socioRepositorio.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
+
+        if (socioExistente.isActivo()){
+            return true;
+        }
+        return false;
+    }
+
+    public List<SocioDTO> buscarPorNombreOApellido(String nombre, String apellido){
+        List<Socio> sociosExistente = socioRepositorio.findByNombreContainingIgnoreCaseOrApellidoContainingIgnoreCase(nombre,apellido);
+
+        if (sociosExistente.isEmpty()){
+            return null;
+        }
+        return sociosExistente.stream().map(socio -> {
+            SocioDTO socioDTO = new SocioDTO();
+            return convertirDTO(socio);
+        }).toList();
+    }
+
+    public List<SocioDTO> sociosMembresiaPorVencer(){
+        LocalDate hoy = LocalDate.now();
+        LocalDate limite = hoy.plusDays(7);
+        List<Socio> proximos = socioRepositorio.findByFechaFinMembresiaBetween(hoy, limite);
+        return proximos.stream()
+                .map(this::convertirDTO)
+                .toList();
+    }
+
 //    public String editarMembresia(String dni, LocalDate nuevaFecha){
 //        Socio socioExistente = socioRepositorio.findByDni(dni);
 //
@@ -154,19 +203,6 @@ public class SocioServicio {
 //        }
 //        return "Socio no encontrado";
 //    }
-
-    public SocioDTO buscarPorDni(String dni){
-
-        if (dni == null || dni.isBlank()){
-            throw new RuntimeException("Ingrese dni porfavor!");
-        }
-
-        Socio socioExistente = socioRepositorio.findByDni(dni)
-                .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
-
-        SocioDTO socioDTO= convertirDTO(socioExistente);
-        return socioDTO;
-    }
 
 //    public List<SocioDTO> sociosVencidos(){
 //        List<Socio> lista = socioRepositorio.findAll();

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -84,6 +83,31 @@ public class SocioControlador {
        return ResponseEntity.ok(resultado);
     }
 
+    @GetMapping("/{dni}/acceso")
+    public ResponseEntity<?> tieneAcceso(@PathVariable String dni){
+        if (socioServicio.validarAccesoSocio(dni)){
+            return ResponseEntity.ok("El socio tiene acceso");
+        }
+        return ResponseEntity.ok("El socio no tiene acceso");
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<?> buscarPorNomApe(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) String apellido)
+    {
+       List<SocioDTO> lista = socioServicio.buscarPorNombreOApellido(nombre, apellido);
+       if ( lista.isEmpty()){
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron socios con el nombre o apellido ingresados!");
+       }
+       return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/vencer")
+    public ResponseEntity<?> sociosMembresiaPorVencer(){
+        return ResponseEntity.ok(socioServicio.sociosMembresiaPorVencer());
+    }
+
 //    @GetMapping("/vencidos")
 //    public ResponseEntity<?> sociosVencidos(){
 //        List<SocioDTO> socios = socioServicio.sociosVencidos();
@@ -92,7 +116,6 @@ public class SocioControlador {
 //        }
 //     return ResponseEntity.status(HttpStatus.CONFLICT).body("No se encontraron socios con la matricula vencida");
 //    }
-
 //    @GetMapping("/buscar/{nombre}")
 //    public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre){
 //        List<SocioDTO> socios = socioServicio.buscarSocios(nombre);
@@ -101,23 +124,6 @@ public class SocioControlador {
 //        }
 //        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron socios con esos caracteres");
 //    }
-
-//    @GetMapping("/buscar")
-//    public ResponseEntity<?> buscarPorNomApe(
-//            @RequestParam(required = false) String nombre,
-//            @RequestParam(required = false) String apellido)
-//    {
-//        List<SocioDTO> socios = socioServicio.buscarSociosPorNomApe(nombre, apellido);
-//        if (!socios.isEmpty()) {
-//            return ResponseEntity.ok(socios);
-//        }
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron socios con esos caracteres");
-//    }
-//    @GetMapping("/{dni}/acceso")
-//    public ResponseEntity<?> tieneAcceso(@PathVariable String dni){
-//        return ResponseEntity.ok(socioServicio.tieneAcceso(dni));
-//    }
-//
 //    @PatchMapping("/{dni}/actualizar")
 //    public ResponseEntity<?> actualizarFechaMembresia(@PathVariable String dni, @RequestBody LocalDate nuevaFecha){
 //        return ResponseEntity.ok(socioServicio.editarMembresia(dni, nuevaFecha));

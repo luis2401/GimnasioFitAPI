@@ -1,23 +1,35 @@
 package com.gimnasio.fit.api.dto;
 
 
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
 
 public class SocioDTO {
     private String dni;
     private String nombre;
     private String apellido;
+    private LocalDate fechaFinMembresia;
     private boolean activo;
 
     public SocioDTO() {
 
     }
 
-    public SocioDTO(String dni, String nombre, String apellido) {
+    public SocioDTO(String dni, String nombre, String apellido, LocalDate fechaFinMembresia) {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.fechaFinMembresia = fechaFinMembresia;
     }
 
+    public LocalDate getFechaFinMembresia() {
+        return fechaFinMembresia;
+    }
+
+    public void setFechaFinMembresia(LocalDate fechaFinMembresia) {
+        this.fechaFinMembresia = fechaFinMembresia;
+    }
 
     public String getDni() {
         return dni;

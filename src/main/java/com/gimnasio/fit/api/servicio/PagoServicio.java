@@ -9,6 +9,7 @@ import com.gimnasio.fit.api.repositorio.MembresiaRepositorio;
 import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,12 +52,29 @@ public class PagoServicio {
         }
     }
 
+    @Transactional
     public PagoDTO guardarPago(String tipoPlan, String dni, String metodoPago){
         Pago pago = new Pago();
 
         Membresia membresia = membresiaRepositorio.findBytipoPlan(tipoPlan);
         Socio socio = socioRepositorio.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Socio no encontrado!"));
+
+        if (!validarMembresiaVigente(socio)){
+            pago.setFechaPago(LocalDate.now());
+            pago.setMonto(obtenerMeses(tipoPlan)*100.0);
+            pago.setMetodo(metodoPago);
+            pago.setMembresia(membresia);
+            pago.setSocio(socio);
+            pago.setFechaInicio(LocalDate.now());
+            pago.setFechaFin(LocalDate.now().plusDays(membresia.getDuracionDias()));
+
+            socio.setFechaFinMembresia(pago.getFechaFin());
+
+            pagoRepositorio.save(pago);
+            socioRepositorio.save(socio);
+            return convertirDTO(pago);
+        }
 
         if (!metodoPago.equalsIgnoreCase("efectivo") && !metodoPago.equalsIgnoreCase("tarjeta")){
             throw new RuntimeException("Ingrese un metodo de pago valido!");
@@ -67,9 +85,10 @@ public class PagoServicio {
         pago.setMetodo(metodoPago);
         pago.setMembresia(membresia);
         pago.setSocio(socio);
-        pago.setFechaInicio(LocalDate.now());
-        pago.setFechaFin(LocalDate.now().plusDays(membresia.getDuracionDias()));
+        pago.setFechaInicio(socio.getPagos().getLast().getFechaFin().plusDays(1));
+        pago.setFechaFin(pago.getFechaInicio().plusDays(membresia.getDuracionDias()));
 
+        socio.setFechaFinMembresia(pago.getFechaFin());
 
         pagoRepositorio.save(pago);
         socioRepositorio.save(socio);
@@ -82,6 +101,22 @@ public class PagoServicio {
         }
         pagoRepositorio.deleteById(id);
         return "Eliminado con éxito";
+    }
+
+    public boolean validarMembresiaVigente(Socio socio){
+        List<Pago> lista = pagoRepositorio.findBySocio(socio)
+                .stream()
+                .filter(pago -> {
+                    return pago.getFechaFin().isAfter(LocalDate.now());
+                })
+                .toList();
+
+        for (Pago pago: lista){
+            if (pago.getFechaFin().isAfter(LocalDate.now())){
+            return true;
+            }
+        }
+        return false;
     }
 
     public PagoDTO convertirDTO(Pago pago){
