@@ -135,6 +135,7 @@ public class ClaseServicio {
                 .orElseThrow(() -> new RuntimeException("Clase no encontrada"));
 
         claseExis.setActivo(!claseExis.isActivo());
+        claseRepositorio.save(claseExis);
         return "Clase activada o desactiva correctamente!";
     }
 

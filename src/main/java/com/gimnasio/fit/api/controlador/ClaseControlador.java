@@ -41,7 +41,7 @@ public class ClaseControlador {
         return ResponseEntity.ok(claseServicio.contarSocioInscritos(id));
     }
 
-    @PatchMapping("/eliminarSocio/{dni}/{id}")
+    @DeleteMapping("/eliminarSocio/{dni}/{id}")
     public ResponseEntity<?> eliminarSocioClase(@PathVariable String dni, @PathVariable Integer id){
         return ResponseEntity.ok(claseServicio.quitarSocioClase(dni, id));
     }
