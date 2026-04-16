@@ -1,8 +1,6 @@
 package com.gimnasio.fit.api.controlador;
 
-
 import com.gimnasio.fit.api.dto.ClaseDTO;
-import com.gimnasio.fit.api.repositorio.ClaseRepositorio;
 import com.gimnasio.fit.api.servicio.ClaseServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

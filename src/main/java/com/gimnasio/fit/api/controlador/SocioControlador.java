@@ -1,6 +1,5 @@
 package com.gimnasio.fit.api.controlador;
 
-
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.servicio.SocioServicio;
 import jakarta.validation.Valid;

@@ -1,17 +1,13 @@
 package com.gimnasio.fit.api.servicio;
 
-import com.gimnasio.fit.api.dto.ClaseDTO;
-import com.gimnasio.fit.api.dto.PagoDTO;
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Socio;
 import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
-
 
 @Service
 public class SocioServicio {

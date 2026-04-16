@@ -1,21 +1,17 @@
 package com.gimnasio.fit.api.servicio;
 
 import com.gimnasio.fit.api.dto.PagoDTO;
-import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Membresia;
 import com.gimnasio.fit.api.modelo.Pago;
 import com.gimnasio.fit.api.modelo.Socio;
 import com.gimnasio.fit.api.repositorio.MembresiaRepositorio;
 import com.gimnasio.fit.api.repositorio.PagoRepositorio;
 import com.gimnasio.fit.api.repositorio.SocioRepositorio;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PagoServicio {

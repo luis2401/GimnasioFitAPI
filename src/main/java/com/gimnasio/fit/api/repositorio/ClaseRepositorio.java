@@ -9,5 +9,4 @@ public interface ClaseRepositorio extends JpaRepository<Clase, Integer> {
 
     Clase findBynombreClase(String nombreclase);
 
-
 }

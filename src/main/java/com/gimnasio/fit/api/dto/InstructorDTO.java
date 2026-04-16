@@ -1,7 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-import com.gimnasio.fit.api.modelo.Clase;
-
 import java.util.List;
 
 public class InstructorDTO {

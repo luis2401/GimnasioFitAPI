@@ -1,8 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
 
 public class SocioDTO {
@@ -54,7 +51,6 @@ public class SocioDTO {
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
-
 
     public boolean isActivo() {
         return activo;

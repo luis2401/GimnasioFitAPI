@@ -1,6 +1,5 @@
 package com.gimnasio.fit.api.servicio;
 
-
 import com.gimnasio.fit.api.dto.ClaseDTO;
 import com.gimnasio.fit.api.dto.SocioDTO;
 import com.gimnasio.fit.api.modelo.Clase;
@@ -12,11 +11,8 @@ import com.gimnasio.fit.api.repositorio.SocioRepositorio;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.management.RuntimeErrorException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClaseServicio {

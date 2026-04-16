@@ -1,6 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-
 import java.util.List;
 
 public class ClaseDTO {

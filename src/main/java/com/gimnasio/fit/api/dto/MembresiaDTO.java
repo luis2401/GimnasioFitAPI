@@ -1,7 +1,5 @@
 package com.gimnasio.fit.api.dto;
 
-import java.time.LocalDate;
-
 public class MembresiaDTO {
 
         private Integer idMembresia;

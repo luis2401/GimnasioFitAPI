@@ -1,10 +1,6 @@
 package com.gimnasio.fit.api.dto;
 
-
-import com.gimnasio.fit.api.modelo.Socio;
-
 import java.time.LocalDate;
-
 
 public class PagoDTO {
     private Integer idPago;

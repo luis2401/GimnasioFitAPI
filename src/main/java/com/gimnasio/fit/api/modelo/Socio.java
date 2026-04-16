@@ -1,6 +1,5 @@
 package com.gimnasio.fit.api.modelo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -50,8 +49,5 @@ public class Socio {
             inverseJoinColumns = @JoinColumn(name = "clase_id")
     )
     private List<Clase> clases;
-
-
-
 
 }

@@ -8,7 +8,6 @@ import com.gimnasio.fit.api.repositorio.ClaseRepositorio;
 import com.gimnasio.fit.api.repositorio.InstructorRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
